@@ -15,7 +15,7 @@ using CarLane = Game.Net.CarLane;
 
 namespace SpeedLimitEditor.System;
 
-public class SpeedLimitEditorUISystem : UISystemBase
+public partial class SpeedLimitEditorUISystem : UISystemBase
 {
     private readonly string kGroup = "speed_limit_editor";
 
