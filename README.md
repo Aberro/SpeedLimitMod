@@ -1,5 +1,12 @@
 # Cities: Skylines 2 - Speed Limit Mod
 
+## V0.2.0
+- Updated to latest game version, mostly reimplemented: new UI system, new UI.
+- Added buttons with speed settings presets
+- Added Reset button
+- The custom speed is now saved and persists on most changes, except connecting new roads.
+Compatible with Traffic mod.
+
 ## V0.1.4
 - Update to latest HookUI for CSII patch 1.0.19f
 

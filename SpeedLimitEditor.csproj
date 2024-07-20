@@ -3,21 +3,43 @@
 	<PropertyGroup>
 		<OutputType>Library</OutputType>
 		<TargetFramework>net472</TargetFramework>
-		<LangVersion>10</LangVersion>
-		<Nullable>enable</Nullable>
 		<Configurations>Debug;Release</Configurations>
 
 		<!--The file where mod information which is required for publishing mod on PDX mods are stored-->
 		<PublishConfigurationPath>Properties\PublishConfiguration.xml</PublishConfigurationPath>
+		<LangVersion>10</LangVersion>
+		<Nullable>enable</Nullable>
+		<Version>0.2.0</Version>
+		<Title>SpeedLimit</Title>
+		<Authors>Aberro, SwiftCobra</Authors>
+		<AssemblyVersion>0.2.0</AssemblyVersion>
+		<FileVersion>0.2.0</FileVersion>
+	</PropertyGroup>
+
+	<PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<DefineConstants>TRACE;SERIALIZATION;DEBUG_CONNECTIONS;DEBUG_CONNECTIONS_SYNC;DEBUG_TOOL;DEBUG_GIZMO</DefineConstants>
+		<DebugType>portable</DebugType>
+	</PropertyGroup>
+
+	<PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+		<DefineConstants>WITH_BURST</DefineConstants>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
 
 	<!--Imports must be after PropertyGroup block-->
 	<Import Project="$([System.Environment]::GetEnvironmentVariable('CSII_TOOLPATH', 'EnvironmentVariableTarget.User'))\Mod.props" />
 	<Import Project="$([System.Environment]::GetEnvironmentVariable('CSII_TOOLPATH', 'EnvironmentVariableTarget.User'))\Mod.targets" />
 	<ItemGroup>
+		<Compile Remove="UI\**" />
 		<Compile Remove="_ReSharper.Caches\**" />
+		<EmbeddedResource Remove="UI\**" />
 		<EmbeddedResource Remove="_ReSharper.Caches\**" />
+		<None Remove="UI\**" />
 		<None Remove="_ReSharper.Caches\**" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Compile Remove="Plugin.cs" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -43,6 +65,9 @@
 			<Private>false</Private>
 		</Reference>
 		<Reference Include="Colossal.Localization">
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="Colossal.Mathematics">
 			<Private>false</Private>
 		</Reference>
 		<Reference Include="Unity.InputSystem">
@@ -75,6 +100,15 @@
 		<Reference Update="System.Data">
 			<Private>false</Private>
 		</Reference>
+		<Reference Update="System.Runtime">
+			<Private>false</Private>
+		</Reference>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Reinforced.Typings" Version="1.6.3">
+			<PrivateAssets>true</PrivateAssets>
+		</PackageReference>
 	</ItemGroup>
 
 	<ItemGroup>
@@ -86,7 +120,11 @@
 		<Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
 	</ItemGroup>
 
-	<ItemGroup>
+	<!--<ItemGroup>
 		<EmbeddedResource Include="dist/bundle.js" />
-	</ItemGroup>
+	</ItemGroup>-->
+
+	<Target Name="BuildUI" AfterTargets="AfterBuild">
+		<Exec Command="npm run build" WorkingDirectory="$(ProjectDir)\UI" />
+	</Target>
 </Project>

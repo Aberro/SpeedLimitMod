@@ -5,6 +5,8 @@ VisualStudioVersion = 17.8.34004.107
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpeedLimitEditor", "SpeedLimitEditor.csproj", "{A0D9FC5A-D85E-4109-89CA-B2CE2212C4E2}"
 EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "UI", "UI\UI.esproj", "{2B92EC2D-7F53-430B-970D-175057ED9D55}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,12 @@ Global
 		{A0D9FC5A-D85E-4109-89CA-B2CE2212C4E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A0D9FC5A-D85E-4109-89CA-B2CE2212C4E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A0D9FC5A-D85E-4109-89CA-B2CE2212C4E2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B92EC2D-7F53-430B-970D-175057ED9D55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B92EC2D-7F53-430B-970D-175057ED9D55}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B92EC2D-7F53-430B-970D-175057ED9D55}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{2B92EC2D-7F53-430B-970D-175057ED9D55}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B92EC2D-7F53-430B-970D-175057ED9D55}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B92EC2D-7F53-430B-970D-175057ED9D55}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

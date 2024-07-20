@@ -117,7 +117,7 @@ const $Panel = ({
     }
 
     const onClose = (e) => {
-        const data = { type: "toggle_visibility", id: "scobra.speed-limit-editor" };
+        const data = { type: "toggle_visibility", id: "speed-limit-editor" };
         const event = new CustomEvent('hookui', { detail: data });
         window.dispatchEvent(event);
     }

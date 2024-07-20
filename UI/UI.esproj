@@ -1,0 +1,54 @@
+<Project Sdk="Microsoft.VisualStudio.JavaScript.SDK/1.0.628833">
+  <PropertyGroup>
+    <UIRoot>.\</UIRoot>
+    <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
+    <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
+    <IsPackable>false</IsPackable>
+    <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
+    <Configurations>Debug;Release</Configurations>
+    <ProductionBuildCommand>npm run build</ProductionBuildCommand>
+    <Platforms>AnyCPU</Platforms>
+  </PropertyGroup>
+  <PropertyGroup>
+    <BuildCommand>npm run build</BuildCommand>
+    <BuildDependsOn>
+    </BuildDependsOn>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupCommand>npm run dev</StartupCommand>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PublishCommand>npm run build</PublishCommand>
+    <StartupCommandWorkingDirectory>C:\Users\aberro\AppData\LocalLow\Colossal Order\Cities Skylines II\Mods\SpeedLimitEditor\</StartupCommandWorkingDirectory>
+  </PropertyGroup>
+  <!--    <ItemGroup>-->
+  <!--        &lt;!&ndash; Don't publish the SPA source files, but do show them in the project files list &ndash;&gt;-->
+  <!--        <Content Remove="$(UIRoot)**"/>-->
+  <!--        <None Remove="$(UIRoot)**"/>-->
+  <!--        <None Include="$(UIRoot)**" Exclude="$(UIRoot)node_modules\**"/>-->
+  <!--    </ItemGroup>-->
+  <ItemGroup>
+    <Script Include="**" Exclude="*.esproj;**\obj\**;**\node_modules\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="src\ui_src\panel.jsx" />
+    <None Remove="src\ui_src\speed-limit-editor.jsx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Script Remove="src\ui_src\speed-limit-editor.jsx" />
+    <Script Remove="src\ui_src\SpeedLimitButton.module.scss" />
+    <Script Remove="src\ui_src\SpeedLimitButton.tsx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="src\localisations\" />
+  </ItemGroup>
+  <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(UIRoot)node_modules') ">
+    <!-- Ensure Node.js is installed -->
+    <Exec Command="node --version" ContinueOnError="true">
+      <Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
+    </Exec>
+    <Error Condition="'$(ErrorCode)' != '0'" Text="Node.js is required to build and run this project. To continue, please install Node.js from https://nodejs.org/, and then restart your command prompt or IDE." />
+    <Message Importance="high" Text="Restoring dependencies using 'npm'. This may take several minutes..." />
+    <Exec WorkingDirectory="$(UIRoot)" Command="npm install" />
+  </Target>
+</Project>

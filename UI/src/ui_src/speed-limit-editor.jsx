@@ -1,4 +1,4 @@
-﻿import React from 'react'
+import React from 'react'
 import { useDataUpdate } from 'hookui-framework'
 import $Panel from './panel'
 
@@ -73,7 +73,7 @@ const $SpeedLimitEditor = ({ react }) => {
     }
 
     const onClose = (e) => {
-        const data = { type: "toggle_visibility", id: "scobra.speed-limit-editor" };
+        const data = { type: "toggle_visibility", id: "speed-limit-editor" };
         const event = new CustomEvent('hookui', { detail: data });
         window.dispatchEvent(event);
     }
@@ -98,7 +98,7 @@ const $SpeedLimitEditor = ({ react }) => {
 }
 
 window._$hookui.registerPanel({
-    id: "scobra.speed-limit-editor",
+    id: "speed-limit-editor",
     name: "Speed Limit",
     icon: "Media/Game/Policies/HighSpeedHighways.svg",
     component: $SpeedLimitEditor

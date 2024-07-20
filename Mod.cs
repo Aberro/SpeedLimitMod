@@ -1,41 +1,46 @@
-﻿using Colossal.IO.AssetDatabase;
-using Colossal.Logging;
+﻿using Colossal.Logging;
 using Game;
 using Game.Modding;
 using Game.SceneFlow;
-using Game.Settings;
-using SpeedLimitEditor.System;
+using JetBrains.Annotations;
+using Reinforced.Typings.Attributes;
+using SpeedLimitEditor.Systems;
+[assembly: TsGlobal(UseModules = true, ExportPureTypings = false, RootNamespace = "CommonTypes")]
 
 namespace SpeedLimitEditor;
 
+[UsedImplicitly]
 public class Mod : IMod
 {
-    public static ILog Log = LogManager.GetLogger($"{nameof(SpeedLimitEditor)}.{nameof(Mod)}").SetShowsErrorsInUI(false);
-    public static Setting? Setting;
-    public void OnLoad(UpdateSystem updateSystem)
-    {
-        Log.Info(nameof(OnLoad));
+	public static readonly ILog Log = LogManager.GetLogger($"{nameof(SpeedLimitEditor)}.{nameof(Mod)}").SetShowsErrorsInUI(false);
+	//public static Setting? Setting;
+	public void OnLoad(UpdateSystem updateSystem)
+	{
+		Log.Info(nameof(OnLoad));
 
-        if (GameManager.instance.modManager.TryGetExecutableAsset(this, out var asset))
-            Log.Info($"Current mod asset at {asset.path}");
+		if (GameManager.instance.modManager.TryGetExecutableAsset(this, out var asset))
+			Log.Info($"Current mod asset at {asset.path}");
 
-        Setting = new Setting(this);
-        Setting.RegisterInOptionsUI();
-        GameManager.instance.localizationManager.AddSource("en-US", new LocaleEN(_Setting));
+		//Setting = new Setting(this);
+		//Setting.RegisterInOptionsUI();
+		//GameManager.instance.localizationManager.AddSource("en-US", new LocaleEN(_Setting));
 
-        //Setting.ReloadSettings();
-        AssetDatabase.global.LoadSettings(nameof(SpeedLimitEditor), _Setting, new Setting(this));
+		//Setting.ReloadSettings();
+		//AssetDatabase.global.LoadSettings(nameof(SpeedLimitEditor), _Setting, new Setting(this));
 
-        updateSystem.UpdateAt<SpeedLimitEditorUISystem>(SystemUpdatePhase.UIUpdate);
-    }
+		//updateSystem.UpdateBefore<SpeedLimitEditorUISystem>(SystemUpdatePhase.GameSimulation);
+		updateSystem.UpdateAt<SpeedLimitEditorUISystem>(SystemUpdatePhase.UIUpdate);
+		updateSystem.UpdateAt<EntitySelectorToolSystem>(SystemUpdatePhase.ToolUpdate);
+		updateSystem.UpdateAt<RestoreSpeedSystem>(SystemUpdatePhase.Modification4B);
+	}
 
-    public void OnDispose()
-    {
-        Log.Info(nameof(OnDispose));
-        if (Setting != null)
-        {
-            Setting.UnregisterInOptionsUI();
-            Setting = null;
-        }
-    }
+	public void OnDispose()
+	{
+		Log.Info(nameof(OnDispose));
+		//if (Setting != null)
+		//{
+		//    Setting.UnregisterInOptionsUI();
+		//    Setting = null;
+		//}
+	}
 }

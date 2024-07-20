@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "SpeedLimitEditor": {
+      "commandName": "Executable",
+      "executablePath": "E:\\Games\\SteamLibrary\\steamapps\\common\\Cities Skylines II\\Cities2.exe",
+      "commandLineArgs": "--pdx-launcher-session-token 2d1f5d8d-afdb-46ac-b1c3-728f5e9eea87 --paradox-account-userid 00948ce1-075f-4950-8e1c-0085a84a38d9 -developerMode -uiDeveloperMode",
+      "workingDirectory": "E:\\Games\\SteamLibrary\\steamapps\\common\\Cities Skylines II\\"
+    }
+  }
+}
