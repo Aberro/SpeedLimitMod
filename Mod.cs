@@ -31,7 +31,8 @@ public class Mod : IMod
 		//updateSystem.UpdateBefore<SpeedLimitEditorUISystem>(SystemUpdatePhase.GameSimulation);
 		updateSystem.UpdateAt<SpeedLimitEditorUISystem>(SystemUpdatePhase.UIUpdate);
 		updateSystem.UpdateAt<EntitySelectorToolSystem>(SystemUpdatePhase.ToolUpdate);
-		updateSystem.UpdateAt<RestoreSpeedSystem>(SystemUpdatePhase.Modification4B);
+		updateSystem.UpdateAt<SetCustomSpeedLimitsSystem>(SystemUpdatePhase.Modification4B);
+		//updateSystem.UpdateBefore<UpdateRoadSignsSystem>(SystemUpdatePhase.MainLoop);
 	}
 
 	public void OnDispose()

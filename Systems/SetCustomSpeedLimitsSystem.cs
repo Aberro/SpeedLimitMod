@@ -13,7 +13,7 @@ using Unity.Jobs;
 namespace SpeedLimitEditor.Systems;
 
 [UsedImplicitly]
-public partial class RestoreSpeedSystem : SystemBase
+public partial class SetCustomSpeedLimitsSystem : SystemBase
 {
 	private EntityQuery entitiesToRestoreQuery;
 	protected override void OnCreate()
@@ -45,7 +45,9 @@ public partial class RestoreSpeedSystem : SystemBase
 	{
 		[ReadOnly]
 		public EntityTypeHandle EntityType;
+		[ReadOnly]
 		public EntityManager EntityManager;
+
 		[SuppressMessage("ReSharper", "ForCanBeConvertedToForeach", Justification = "This is a burst method, so it's better with for loops.")]
 		public void Execute(in ArchetypeChunk chunk, int unfilteredChunkIndex, bool useEnabledMask, in v128 chunkEnabledMask)
 		{
@@ -53,6 +55,7 @@ public partial class RestoreSpeedSystem : SystemBase
 			for(int i = 0; i < array.Length; i++)
 			{
 				var entity = array[i];
+
 				if (this.EntityManager.TryGetComponent(entity, out CustomSpeed speed))
 					SetSpeed(entity, speed.m_Value);
 			}
@@ -69,28 +72,10 @@ public partial class RestoreSpeedSystem : SystemBase
 					SetSpeedSubLane(ref subLane, speed);
 					subLanes[i] = subLane;
 				}
-			if (this.EntityManager.TryGetComponent(entity, out Edge edge))
-			{
-				if (this.EntityManager.TryGetBuffer(edge.m_Start, false, out subLanes))
-					for (int i = 0; i < subLanes.Length; i++)
-					{
-						var subLane = subLanes[i];
-						SetSpeedSubLane(ref subLane, speed);
-						subLanes[i] = subLane;
-					}
-				if (this.EntityManager.TryGetBuffer(edge.m_End, false, out subLanes))
-					for (int i = 0; i < subLanes.Length; i++)
-					{
-						var subLane = subLanes[i];
-						SetSpeedSubLane(ref subLane, speed);
-						subLanes[i] = subLane;
-					}
-			}
 		}
 
 		private void SetSpeedSubLane(ref SubLane subLane, float speed)
 		{
-			// TODO: ensure that we ignore building connections, but not other unsafe lanes.
 			var ignoreFlags = CarLaneFlags.Unsafe | CarLaneFlags.SideConnection;
 			if (this.EntityManager.TryGetComponent(subLane.m_SubLane, out CarLane carLane) && ((carLane.m_Flags & ignoreFlags) != ignoreFlags))
 			{

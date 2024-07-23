@@ -22,8 +22,10 @@ namespace SpeedLimitEditor.Systems;
 [UsedImplicitly]
 public partial class SpeedLimitEditorUISystem : UISystemBase
 {
-	private const float MphToKmh = 1.609344f;
-	private const float KmhToMph = 0.62137119f;
+	private const float InternalToMph = 1.26f;
+	private const float MphToInternal = 0.79365085f;
+	private const float InternalToKph = 1.8f;
+	private const float KphToInternal = 0.5555556f;
 
 	private ToolSystem toolSystem = null!;
 	private EntitySelectorToolSystem entitySelectorTool = null!;
@@ -66,10 +68,10 @@ public partial class SpeedLimitEditorUISystem : UISystemBase
 	private GetterValueBinding<float> averageSpeedBinding = null!;
 	public float AverageSpeed
 	{
-		get => Mathf.Round(this.units == InterfaceSettings.UnitSystem.Metric ? this.averageSpeed : this.averageSpeed * KmhToMph);
+		get => Mathf.Round(this.units == InterfaceSettings.UnitSystem.Metric ? this.averageSpeed * InternalToKph : this.averageSpeed * InternalToMph);
 		set
 		{
-			var convertedValue = this.units == InterfaceSettings.UnitSystem.Metric ? value : value * MphToKmh;
+			var convertedValue = this.units == InterfaceSettings.UnitSystem.Metric ? value * KphToInternal : value * MphToInternal;
 			if (Math.Abs(this.averageSpeed - convertedValue) < 1)
 				return;
 			this.averageSpeed = convertedValue;
@@ -86,6 +88,7 @@ public partial class SpeedLimitEditorUISystem : UISystemBase
 
 	protected override void OnCreate()
 	{
+		base.OnCreate();
 		AddBinding(this.toolActiveBinding = new ValueBinding<bool>(nameof(SpeedLimitEditor), Bindings.SpeedLimitToolActive, false));
 		AddBinding(this.unitsBinding = new GetterValueBinding<string>(nameof(SpeedLimitEditor), Bindings.UnitSystem, () => this.units == InterfaceSettings.UnitSystem.Metric ? "kph" : "mph"));
 		AddBinding(this.averageSpeedBinding = new GetterValueBinding<float>(nameof(SpeedLimitEditor), Bindings.AverageSpeed, () => AverageSpeed));
@@ -94,7 +97,6 @@ public partial class SpeedLimitEditorUISystem : UISystemBase
 		AddBinding(new TriggerBinding(nameof(SpeedLimitEditor), Bindings.SelectTool, HandleSelectTool));
 		AddBinding(new TriggerBinding(nameof(SpeedLimitEditor), Bindings.Reset, HandleReset));
 
-		base.OnCreate();
 		this.toolSystem = World.GetOrCreateSystemManaged<ToolSystem>();
 		this.entitySelectorTool = World.GetOrCreateSystemManaged<EntitySelectorToolSystem>();
 		this.defaultTool = World.GetOrCreateSystemManaged<DefaultToolSystem>();
@@ -118,7 +120,6 @@ public partial class SpeedLimitEditorUISystem : UISystemBase
 		if(this.selectedEntity.Index != this.toolSystem.selected.Index || this.selectedEntity.Version != this.toolSystem.selected.Version)
 		{
 			if (ToolActive && this.toolSystem.activeTool != this.entitySelectorTool)
-				//this.toolSystem.activeTool = this.entitySelectorTool;
 				this.toolSystem.activeTool = this.entitySelectorTool;
 			if (this.toolSystem.selected == Entity.Null)
 			{
@@ -131,8 +132,9 @@ public partial class SpeedLimitEditorUISystem : UISystemBase
 
 			// new entity selected, update values
 			var entity = this.toolSystem.selected;
-			AverageSpeed = GetAverageSpeed(entity);
-			if(AverageSpeed > 0)
+			this.averageSpeed = GetAverageSpeed(entity);
+			this.averageSpeedBinding.Update();
+			if (AverageSpeed > 0)
 			{
 				this.selectedEntity = this.toolSystem.selected;
 				RoadName = this.nameSystem.GetRenderedLabelName(this.toolSystem.selected);
@@ -145,7 +147,6 @@ public partial class SpeedLimitEditorUISystem : UISystemBase
 			}
 		}
 		else if (ToolActive && this.toolSystem.activeTool != this.entitySelectorTool)
-				//this.toolSystem.activeTool = this.entitySelectorTool;
 		{
 			ToolActive = false;
 		}
@@ -155,7 +156,6 @@ public partial class SpeedLimitEditorUISystem : UISystemBase
 	{
 		void GatherSpeed(ref SubLane subLane)
 		{
-			// TODO: ensure that we ignore building connections, but not other unsafe lanes.
 			var ignoreFlags = CarLaneFlags.Unsafe | CarLaneFlags.SideConnection;
 			if (EntityManager.TryGetComponent(subLane.m_SubLane, out CarLane carLane) && ((carLane.m_Flags & ignoreFlags) != ignoreFlags))
 				this.speeds.Add(carLane.m_SpeedLimit);
@@ -179,48 +179,24 @@ public partial class SpeedLimitEditorUISystem : UISystemBase
 		}
 	}
 
-	private void SetSpeed(Entity entity, float speed)
-	{
-		void SetSpeedSubLane(ref SubLane subLane)
-		{
-			// TODO: ensure that we ignore building connections, but not other unsafe lanes.
-			var ignoreFlags = CarLaneFlags.Unsafe | CarLaneFlags.SideConnection;
-			if (EntityManager.TryGetComponent(subLane.m_SubLane, out CarLane carLane) && ((carLane.m_Flags & ignoreFlags) != ignoreFlags))
-			{
-				carLane.m_DefaultSpeedLimit = speed;
-				carLane.m_SpeedLimit = speed;
-				EntityManager.SetComponentData(subLane.m_SubLane, carLane);
-			}
-			if(EntityManager.TryGetComponent(subLane.m_SubLane, out TrackLane trackLane))
-			{
-				trackLane.m_SpeedLimit = speed;
-				EntityManager.SetComponentData(subLane.m_SubLane, trackLane);
-			}
-		}
-		DynamicBuffer<SubLane> subLanes;
-		if(EntityManager.TryGetBuffer(entity, false, out subLanes))
-			subLanes.ForEach(subLane => SetSpeedSubLane(ref subLane));
-		if(EntityManager.TryGetComponent(entity, out Temp temp))
-		{
-			if (!EntityManager.HasComponent<CustomSpeed>(temp.m_Original))
-				EntityManager.AddComponent<CustomSpeed>(temp.m_Original);
-			EntityManager.SetComponentData(temp.m_Original, new CustomSpeed { m_Value = speed });
-		}
-		else
-		{
-			if(!EntityManager.HasComponent<CustomSpeed>(entity))
-				EntityManager.AddComponent<CustomSpeed>(entity);
-			EntityManager.SetComponentData(entity, new CustomSpeed { m_Value = speed });
-		}
-	}
-
 	private void HandleSpeedLimitChange(float suggestedSpeed)
 	{
 		if (this.selectedEntity == Entity.Null || suggestedSpeed <= 0 || Math.Abs(suggestedSpeed - AverageSpeed) < 0.5f)
 			return;
 		this.changingSpeed = true;
-		AverageSpeed = suggestedSpeed;
-		SetSpeed(this.selectedEntity, AverageSpeed);
+		AverageSpeed = suggestedSpeed; // Use this to convert units.
+		if (EntityManager.TryGetComponent(this.selectedEntity, out Temp temp))
+		{
+			EntityManager.AddComponent<CustomSpeed>(temp.m_Original);
+			EntityManager.SetComponentData(temp.m_Original, new CustomSpeed { m_Value = this.averageSpeed });
+			EntityManager.AddComponent<Updated>(temp.m_Original);
+		}
+		else
+		{
+			EntityManager.AddComponent<CustomSpeed>(this.selectedEntity);
+			EntityManager.SetComponentData(this.selectedEntity, new CustomSpeed { m_Value = this.averageSpeed });
+			EntityManager.AddComponent<Updated>(this.selectedEntity);
+		}
 		this.changingSpeed = false;
 	}
 
@@ -230,9 +206,7 @@ public partial class SpeedLimitEditorUISystem : UISystemBase
 	{
 		if(this.selectedEntity == Entity.Null)
 			return;
-		if (EntityManager.HasComponent<CustomSpeed>(this.selectedEntity))
-			EntityManager.RemoveComponent<CustomSpeed>(this.selectedEntity);
-		if (!EntityManager.HasComponent<Updated>(this.selectedEntity))
-			EntityManager.AddComponent<Updated>(this.selectedEntity);
+		EntityManager.RemoveComponent<CustomSpeed>(this.selectedEntity);
+		EntityManager.AddComponent<Updated>(this.selectedEntity);
 	}
 }

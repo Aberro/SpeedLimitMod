@@ -18,7 +18,9 @@
 
 ## Known issues and limitations
 
-Speed will reset to default values on new road connections.
+- Speed will reset to default values on new road connections.
+- Some users report exceptions during mod initializaiton, currently investigating.
+- Speed limit props (road signs and markings) are showing default values, can't change that.
 
 ## Compatibility with other modifications
 
@@ -27,9 +29,9 @@ Speed will reset to default values on new road connections.
 
 ## Credits
 
-Aberro - the author of this fork and update.
-SwiftCobra - the original mod author.
-krzychu124 - modder of Cities: Skylines discord channel, who helped a lot during the development.</LongDescription>
+- Aberro - the author of this fork and update.
+- SwiftCobra - the original mod author.
+- krzychu124 - modder of Cities: Skylines discord channel, who helped a lot during the development.</LongDescription>
 	<!--Thumbnail-->
 	<Thumbnail Value="Properties/Thumbnail.png" />
 	<!--Screenshot, can be set multiple times-->
@@ -39,18 +41,26 @@ krzychu124 - modder of Cities: Skylines discord channel, who helped a lot during
 	<!--Link to the forum post where the mod can be discussed-->
 	<ForumLink Value="" />
 	<!--Version of the mod-->
-	<ModVersion Value="0.2.0" />
+	<ModVersion Value="0.2.3" />
 	<!--Recommended version of the base game to use the mod-->
 	<GameVersion Value="1.1.*" />
 	<!--Dependency for the mod, can be set multiple times-->
 	<Dependency Id="" />
 	<!--Change log for new version. Single line or multi line. Supports minimal markdown subset-->
-	<ChangeLog>## v.0.2.0
+	<ChangeLog>## v0.2.0
 - Updated to latest game version, mostly reimplemented: new UI system, new UI.
 - Added buttons with speed settings presets
 - Added Reset button
 - The custom speed is now saved and persists on most changes, except connecting new roads.
 Compatible with Traffic mod.
+## 0.2.1
+- Some code cleanup
+- Removed edges from calculations and modifications - only lanes inside selected entity now are modified.
+## 0.2.2
+- Fix for previous update that broke the mod initialization.
+## 0.2.3
+- Fix for units conversion.
+- Fix for issue when updated segment also setting custom speed to both of it's edges.
 	</ChangeLog>
 	<!--ChangeLog>
 	</ChangeLog-->

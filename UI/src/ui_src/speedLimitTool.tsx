@@ -59,8 +59,10 @@ export const SpeedLimitTool = ({ isEditor }: Props) => {
     const [left, setLeft] = useState(-999);
     const [dragging, setDragging] = useState(false);
     const containerRef = useRef<any>(null);
+    const [speeds, setSpeeds] = useState([30, 40, 50, 60, 80, 100, 120]);
 
     useEffect(() => setSpeedValue(averageSpeed), [averageSpeed]);
+    useEffect(() => setSpeeds(units == "kph" ? [30, 40, 50, 60, 80, 100, 120, 140] : [25, 30, 35, 45, 55, 65, 70, 90]), [units]);
 
     const onClose = () => {
         const data = { type: "toggle_visibility", id: "speed-limit-editor" };
@@ -136,7 +138,7 @@ export const SpeedLimitTool = ({ isEditor }: Props) => {
                     : <div>
                         <Title title={roadName} />
                         <FlexboxComponent>
-                            {[25, 30, 40, 50, 60, 80, 100, 120].map(SetSpeedButton)}
+                            {speeds.map(SetSpeedButton)}
                         </FlexboxComponent>
                         <ButtonComponent onClick={handleReset}>{getString(locale, "Reset")}</ButtonComponent>
                         <MainPanelRange
